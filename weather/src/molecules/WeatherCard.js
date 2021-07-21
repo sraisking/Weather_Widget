@@ -8,13 +8,15 @@ import CurrentDayWeather from '../organisms/CurrentDayWeather';
 import MetricSwitch from '../atoms/MetricSwitch';
 import SearchBox from '../atoms/Searchbox';
 import ErrorPanel from '../organisms/ErrorPanel';
+import { useThemeSwitcher } from "mui-theme-switcher";
 
 const useStyles = makeStyles({
   root: {
     minWidth: "100vw",
-    minHeight: "50vh"
+    minHeight: "100vh"
   },
 });
+
 const WeatherCard = ({ locationDetails }) => {
   const classes = useStyles();
   const [userInputLocation, setUserInputLocation] = useState(null)
@@ -22,7 +24,9 @@ const WeatherCard = ({ locationDetails }) => {
   const [isError, setError] = useState(false);
   const [imperial, setImperial] = useState(false);
   const [unit, setUnit] = useState("metric");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const { dark, toggleDark } = useThemeSwitcher();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -99,19 +103,33 @@ const WeatherCard = ({ locationDetails }) => {
         </Grid>}
       </CardContent>
       <CardActions>
-        <Grid container spacing={2} alignItems='center'>
+        <Grid container spacing={2} justifyContent='space-between'>
           <Grid item>
-            <Typography>
-              Farhenhit
-            </Typography>
+            <Grid container spacing={2} justifyContent='flex-start'>
+              <Grid item>
+                <Typography>
+                  Farhenhit
+                </Typography>
+              </Grid>
+              <Grid item>
+                <MetricSwitch checked={imperial} onChange={handleUnitChange} name="checkedC" />
+              </Grid>
+              <Grid item>
+                <Typography>
+                  Celsius
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item>
-            <MetricSwitch checked={imperial} onChange={handleUnitChange} name="checkedC" />
+            <Grid container spacing={2}>
+              <Grid item>
+            <MetricSwitch checked={dark} onClick={() => { toggleDark() }} name="checkedd" />
+            </Grid>
+            <Grid item>
+              <Typography>Toggle Dark Mode</Typography>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography>
-              Celsius
-            </Typography>
           </Grid>
         </Grid>
       </CardActions>
@@ -120,11 +138,13 @@ const WeatherCard = ({ locationDetails }) => {
   )
 
   return (
-
-    <Card className={classes.root}>
-      {!isError && renderWeatherBody()}
-      {isError && (<ErrorPanel />)}
-    </Card>
+    <>
+      {/* <CssBaseline /> */}
+      <Card className={classes.root}>
+        {!isError && renderWeatherBody()}
+        {isError && (<ErrorPanel />)}
+      </Card>
+    </>
   )
 }
 

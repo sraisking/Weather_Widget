@@ -3,11 +3,24 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {  createTheme } from '@material-ui/core';
+import { ThemeSwitcherProvider } from "mui-theme-switcher";
+const darkTheme = createTheme({
+  palette: {
+    type: "dark"
+  }
+});
+
+const lightTheme = createTheme({});
 
 ReactDOM.render(
-  <React.StrictMode>
+  <ThemeSwitcherProvider
+    lightTheme={lightTheme}
+    darkTheme={darkTheme}
+    defaultTheme="dark"
+  >
     <App />
-  </React.StrictMode>,
+  </ThemeSwitcherProvider>,
   document.getElementById('root')
 );
 
