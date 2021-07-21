@@ -77,7 +77,7 @@ const WeatherCard = ({ locationDetails }) => {
           title={getTitle() || null}
           subheader={getSubheader() || null}
           action={
-            <SearchBox onClick={onClick} />
+            <SearchBox id="searchbox" onClick={onClick} />
           }
         />
       }

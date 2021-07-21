@@ -16,11 +16,13 @@ const SearchBox = ({onClick}) => {
     return (
         <TextField
             label="City Based Weather"
+            id="searchbox"
+            data-testid="locationSearchbox"
             onChange={onChange}
             InputProps={{
                 endAdornment: (
                     <InputAdornment onClick={handleClick} position="start">
-                        <IconButton>
+                        <IconButton id="searchbtn">
                             <SearchIcon />
                         </IconButton>
                     </InputAdornment>

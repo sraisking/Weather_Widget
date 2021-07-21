@@ -1,10 +1,9 @@
 import React from 'react';
-import { cleanup, fireEvent, getByRole, getByText, render, wait } from '@testing-library/react';
+import { cleanup, fireEvent, render, wait } from '@testing-library/react';
 import WeatherWidget from '../../pages/WeatherWidget';
 import axios from 'axios';
 jest.mock('axios')
 afterEach(cleanup);
-const mockfn=jest.fn()
 beforeEach(() => {
     const data = {
         data: {
@@ -37,15 +36,30 @@ beforeEach(() => {
                 },
             ]
         }
-
-
+        
     }
-    mockfn.mockResolvedValue(data)
-   
+    const locationData = {
+        data: [
+            { lat: 12, lon: 13 }
+        ]
+    }
+    // mockfn.mockResolvedValue(data)
+    axios.get.mockImplementation((url) => {
+        switch (url) {
+            case 'https://api.openweathermap.org/data/2.5/onecall?&units=metric&lat=22&lon=24&appid=11ab70ad14039b5b8971613e0c1c91b6':
+                return Promise.resolve(data)
+            case 'https://api.openweathermap.org/geo/1.0/direct?q=kolkata&limit=5&appid=11ab70ad14039b5b8971613e0c1c91b6':
+                return Promise.resolve(locationData)
+            case  'https://api.openweathermap.org/data/2.5/onecall?&units=metric&lat=22&lon=24&appid=11ab70ad14039b5b8971613e0c1c91b6':
+                return Promise.resolve(data)
+
+            default:
+                return Promise.reject(new Error('not found'))
+        }
+    })
 })
-it('Weather widget should be rendered and api call should be made once', async () => {
-    axios.get.mockResolvedValue(mockfn());
-    const { getByText ,getByRole} = render(<WeatherWidget location={{ latitude: '22', longitude: '24' }} />);
+test('Weather widget should be rendered and api call should be made once', async () => {
+    const { getByText, getAllByRole, getByRole } = render(<WeatherWidget location={{ latitude: '22', longitude: '24' }} />);
     //service call test
     await wait(() => {
         expect(getByText('Asia/Kolkata')).toBeTruthy();
@@ -55,6 +69,18 @@ it('Weather widget should be rendered and api call should be made once', async (
         expect(getByText('Clouds : 75')).toBeTruthy();
         expect(getByText('Dew point : 27.94')).toBeTruthy();
         expect(getByText('Wind speed : 2.57')).toBeTruthy();
-        expect(getByRole('checkbox')).toBeTruthy();
+        const themeToggler = getAllByRole('checkbox')[1];
+        expect(themeToggler.checked).toEqual(false)
     });
+    expect(axios.get).toHaveBeenCalledWith(
+        'https://api.openweathermap.org/data/2.5/onecall?&units=metric&lat=22&lon=24&appid=11ab70ad14039b5b8971613e0c1c91b6'
+    );
+    const searchbox = getByRole('textbox');
+    fireEvent.change(searchbox, { target: { value: 'kolkata' } })
+    const searchBtn = getByRole('button');
+    await fireEvent.click(searchBtn);
+    expect(axios.get).toHaveBeenCalledWith(
+        'https://api.openweathermap.org/geo/1.0/direct?q=kolkata&limit=5&appid=11ab70ad14039b5b8971613e0c1c91b6'
+    );
+    expect(axios.get).toHaveBeenCalledWith('https://api.openweathermap.org/data/2.5/onecall?&units=metric&lat=22&lon=24&appid=11ab70ad14039b5b8971613e0c1c91b6')
 });

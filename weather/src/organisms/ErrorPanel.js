@@ -6,7 +6,7 @@ const ErrorPanel=()=>{
             <Grid item xs={6}>
                 <ErrorIcon color="secondary"/>
             </Grid>
-            <Grid Item xs={6}>
+            <Grid item xs={6}>
                 <Typography variant='h3'>
                     Error fetching data
                 </Typography>
