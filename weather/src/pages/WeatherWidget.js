@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 const WeatherWidget=(props)=>{
+  
     const classes=useStyles();
     return(
         <div className={classes.root}>
